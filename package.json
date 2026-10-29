@@ -1,0 +1,12 @@
+{
+  "name": "lars-travel-map",
+  "version": "1.0.0",
+  "description": "LARS / IN TRANSIT - 城市日记与旅行地图",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "build": "echo 'Build complete'",
+    "start": "node server.js"
+  },
+  "dependencies": {}
+}

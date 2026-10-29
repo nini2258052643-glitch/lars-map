@@ -1,0 +1,2774 @@
+/* =====================================================
+   基础
+===================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+
+body {
+    background: #f4f0e9;
+    color: #292724;
+
+    font-family:
+        "Noto Serif SC",
+        serif;
+
+    overflow: hidden;
+}
+
+
+
+/* =====================================================
+   页面系统
+===================================================== */
+
+#app {
+    width: 100%;
+    height: 100%;
+}
+
+
+.page {
+    position: fixed;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    opacity: 0;
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.7s ease,
+        visibility 0.7s ease;
+}
+
+
+.page.active {
+    opacity: 1;
+    visibility: visible;
+
+    pointer-events: auto;
+}
+
+
+
+/* =====================================================
+   首页
+===================================================== */
+
+#home-page {
+    position: relative;
+}
+
+
+.project-name {
+    position: absolute;
+
+    left: 4vw;
+    top: 3.5vh;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 15px;
+
+    letter-spacing: 0.12em;
+
+    color: #292724;
+}
+
+
+.project-time {
+    position: absolute;
+
+    right: 4vw;
+    top: 3.7vh;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 12px;
+
+    letter-spacing: 0.12em;
+
+    opacity: 0.55;
+}
+
+
+.home-content {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width: min(680px, 80vw);
+
+    text-align: center;
+}
+
+
+.home-content h1 {
+    font-size: clamp(34px, 4vw, 62px);
+
+    font-weight: 400;
+
+    letter-spacing: 0.08em;
+
+    margin-bottom: 55px;
+}
+
+
+.intro-text {
+    font-size: 15px;
+
+    line-height: 2.25;
+
+    letter-spacing: 0.13em;
+
+    color: rgba(41, 39, 36, 0.72);
+}
+
+
+.intro-text p {
+    margin-bottom: 23px;
+}
+
+
+.enter-button {
+    margin-top: 48px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #292724;
+
+    cursor: pointer;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 15px;
+
+    letter-spacing: 0.15em;
+
+    transition:
+        transform 0.3s ease,
+        opacity 0.3s ease;
+}
+
+
+.enter-button strong {
+    font-size: 20px;
+
+    font-weight: 400;
+
+    transition:
+        transform 0.3s ease;
+}
+
+
+.enter-button:hover {
+    transform: translateX(4px);
+}
+
+
+.enter-button:hover strong {
+    transform: translateX(6px);
+}
+
+
+.page-number {
+    position: absolute;
+
+    left: 4vw;
+    bottom: 4vh;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 12px;
+
+    letter-spacing: 0.15em;
+
+    opacity: 0.55;
+}
+
+
+
+/* =====================================================
+   地图页面
+===================================================== */
+
+#map-page {
+    position: relative;
+    overflow: hidden;
+}
+
+
+
+/* 顶部 */
+
+.map-header {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    top: 0;
+
+    height: 90px;
+
+    z-index: 50;
+    pointer-events: none;
+}
+
+
+.map-header .project-name {
+    position: absolute;
+    pointer-events: auto;
+}
+
+
+.back-button {
+    position: absolute;
+
+    right: 4vw;
+    top: 3.5vh;
+
+    border: none;
+
+    background: transparent;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 13px;
+
+    letter-spacing: 0.13em;
+
+    color: #292724;
+
+    cursor: pointer;
+
+    opacity: 0.65;
+
+    pointer-events: auto;
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+
+.back-button:hover {
+    opacity: 1;
+
+    transform:
+        translateX(-4px);
+}
+
+
+
+/* =====================================================
+   地图区域与空间布局结构
+   【地图区域】和【右侧城市信息区域】为两个相对独立固定的版块
+===================================================== */
+
+.map-layout-container {
+    position: absolute;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+
+/*
+    左侧地图框架：
+    地图只在自己的地图区域内移动和缩放。
+    overflow: hidden 防止任何地图图形穿透覆盖到右侧信息面板。
+    面板展开时，地图框架自适应收缩至左侧可用宽度。
+*/
+
+.map-frame {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+
+    background: transparent;
+
+    border: none;
+
+    z-index: 10;
+
+    transition:
+        width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#map-page.has-sidebar .map-frame {
+    width: calc(100vw - 420px);
+}
+
+
+.map-viewport {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    cursor: grab;
+
+    background: transparent;
+}
+
+
+.map-viewport:active {
+    cursor: grabbing;
+}
+
+
+
+/* =====================================================
+   SVG 中国地图
+===================================================== */
+
+#china-map {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    overflow: visible;
+
+    background: transparent;
+}
+
+
+
+/* =====================================================
+   中国省份
+===================================================== */
+
+.province {
+    fill: rgba(70, 66, 60, 0.025);
+
+    stroke: rgba(41, 39, 36, 0.34);
+
+    stroke-width: 0.8;
+
+    vector-effect: non-scaling-stroke;
+
+    transition:
+        fill 0.25s ease;
+}
+
+
+.province:hover {
+    fill: rgba(70, 66, 60, 0.075);
+}
+
+
+
+/* =====================================================
+   城市点
+===================================================== */
+
+.city-point {
+    fill: #292724;
+
+    stroke: #f4f0e9;
+
+    stroke-width: 1;
+
+    vector-effect: non-scaling-stroke;
+
+    cursor: pointer;
+}
+
+
+.city-point:hover {
+    fill: #000;
+}
+
+
+
+/* =====================================================
+   城市名称
+===================================================== */
+
+.city-label {
+    font-family:
+        "Noto Serif SC",
+        serif;
+
+    font-size: 5px;
+
+    fill: #292724;
+
+    pointer-events: none;
+
+    letter-spacing: 0.05em;
+}
+
+
+
+/* =====================================================
+   右侧城市旅行档案面板（固定位置、独立版块）
+===================================================== */
+
+.place-panel {
+    position: absolute;
+
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 420px;
+    height: 100vh;
+
+    background: #f4f0e9;
+
+    border-left: 1px solid rgba(41, 39, 36, 0.12);
+
+    box-shadow: -10px 0 35px rgba(41, 39, 36, 0.04);
+
+    z-index: 80;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 34px 38px 40px;
+
+    box-sizing: border-box;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    transform: translateX(100%);
+
+    opacity: 0;
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.4s ease,
+        visibility 0.4s ease;
+}
+
+
+.place-panel.visible {
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+
+    transform: translateX(0);
+}
+
+
+/* 顶部操作条 */
+
+.panel-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+
+.close-place {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 50%;
+    border: 1px solid transparent;
+
+    background: transparent;
+
+    color: #292724;
+
+    font-size: 26px;
+    font-weight: 200;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0.55;
+
+    padding: 0;
+
+    transition:
+        opacity 0.2s ease,
+        background 0.2s ease,
+        transform 0.25s ease;
+
+    pointer-events: auto !important;
+}
+
+
+.close-place:hover {
+    opacity: 1;
+    background: rgba(41, 39, 36, 0.06);
+    transform: rotate(90deg);
+}
+
+
+.place-label {
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 11px;
+
+    letter-spacing: 0.18em;
+
+    opacity: 0.55;
+}
+
+
+.place-panel h2 {
+    font-size: 34px;
+
+    font-weight: 400;
+
+    letter-spacing: 0.1em;
+
+    margin-bottom: 6px;
+}
+
+
+.place-location {
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 12px;
+
+    letter-spacing: 0.14em;
+
+    opacity: 0.5;
+}
+
+
+.place-line {
+    width: 100%;
+    height: 1px;
+
+    background: rgba(41, 39, 36, 0.12);
+
+    margin: 20px 0 16px;
+}
+
+
+.place-description {
+    font-size: 14px;
+
+    line-height: 1.9;
+
+    letter-spacing: 0.08em;
+
+    color: rgba(41, 39, 36, 0.76);
+}
+
+
+/* 两个独立板块导航 (01 城市记忆 / 02 地点与活动) */
+
+.city-sections-nav {
+    display: flex;
+    align-items: baseline;
+    gap: 22px;
+
+    border-bottom: 1px solid rgba(41, 39, 36, 0.12);
+
+    margin: 28px 0 18px;
+
+    padding-bottom: 12px;
+}
+
+
+.section-tab {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px 0;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    color: rgba(41, 39, 36, 0.45);
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    position: relative;
+    transition: color 0.25s ease;
+}
+
+.section-tab .tab-index {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 11px;
+    opacity: 0.6;
+}
+
+.section-tab.active {
+    color: #292724;
+    font-weight: 500;
+}
+
+.section-tab.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -13px;
+    width: 100%;
+    height: 1.5px;
+    background: #292724;
+}
+
+.tab-count-badge {
+    font-size: 10px;
+    opacity: 0.55;
+    font-family: "Cormorant Garamond", serif;
+}
+
+.city-sections-content {
+    width: 100%;
+}
+
+.section-pane {
+    display: none;
+}
+
+.section-pane.active {
+    display: block;
+}
+
+
+
+/* =====================================================
+   地图操作提示
+===================================================== */
+
+.map-hint {
+    position: absolute;
+
+    left: 4vw;
+    bottom: 4vh;
+
+    z-index: 60;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 11px;
+
+    letter-spacing: 0.12em;
+
+    opacity: 0.42;
+}
+
+
+.map-hint span {
+    margin: 0 8px;
+}
+
+
+.map-page-number {
+    position: absolute;
+
+    right: 4vw;
+    bottom: 4vh;
+
+    z-index: 60;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 12px;
+
+    letter-spacing: 0.15em;
+
+    opacity: 0.45;
+}
+
+
+
+/* =====================================================
+   鸟形鼠标与飞行系统
+===================================================== */
+
+.bird-cursor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 44px;
+    height: 32px;
+    pointer-events: none !important;
+    z-index: 9999;
+    color: #292724;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease;
+    will-change: transform, left, top;
+}
+
+.bird-cursor svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 2px 5px rgba(41, 39, 36, 0.08));
+    transform-origin: 40% 50%;
+    transition: transform 0.15s ease-out;
+}
+
+/* 扇翅与滑翔微动动画 */
+.bird-main-wing {
+    transform-origin: 18px 16px;
+    animation: birdWingBeat 2.4s ease-in-out infinite;
+}
+
+.bird-back-wing {
+    transform-origin: 20px 14px;
+    animation: birdWingBeat 2.4s ease-in-out infinite reverse;
+}
+
+@keyframes birdWingBeat {
+    0%, 100% {
+        transform: rotate(0deg) scaleY(1);
+    }
+    18% {
+        transform: rotate(-10deg) scaleY(0.85);
+    }
+    36% {
+        transform: rotate(4deg) scaleY(1.06);
+    }
+    54% {
+        transform: rotate(-6deg) scaleY(0.92);
+    }
+    72% {
+        transform: rotate(0deg) scaleY(1);
+    }
+}
+
+/* 柔和残影 / 拖尾点 */
+.bird-cursor-trail {
+    position: fixed;
+    left: 0;
+    top: 0;
+    pointer-events: none !important;
+    z-index: 9998;
+    border-radius: 50%;
+    background: rgba(41, 39, 36, 0.18);
+    transform: translate(-50%, -50%);
+    will-change: left, top, opacity, transform;
+    transition: opacity 0.3s ease;
+}
+
+.bird-cursor-trail.trail-1 {
+    width: 5px;
+    height: 5px;
+    opacity: 0.28;
+    box-shadow: 0 0 6px rgba(41, 39, 36, 0.15);
+}
+
+.bird-cursor-trail.trail-2 {
+    width: 3px;
+    height: 3px;
+    opacity: 0.14;
+    box-shadow: 0 0 4px rgba(41, 39, 36, 0.1);
+}
+
+
+
+/* =====================================================
+   小屏幕响应式
+===================================================== */
+
+@media (max-width: 860px) {
+
+    .home-content h1 {
+        font-size: 34px;
+    }
+
+
+    .intro-text {
+        font-size: 13px;
+    }
+
+
+    #map-page.has-sidebar .map-frame {
+        width: 100vw;
+    }
+
+
+    .place-panel {
+        width: min(390px, 94vw);
+        padding: 28px 24px 34px;
+    }
+
+}
+
+
+/* =====================================================
+   板块 02：城市地点与活动档案卡片与列表
+===================================================== */
+
+.places-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.places-section-title {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    opacity: 0.55;
+    font-family: "Cormorant Garamond", serif;
+}
+
+.places-action-button {
+    border: none;
+    background: transparent;
+    padding: 4px 0;
+    cursor: pointer;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: #292724;
+    transition: opacity 0.2s ease;
+}
+
+.places-action-button:hover {
+    opacity: 0.6;
+}
+
+.open-archive-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    background: rgba(248, 246, 239, 0.7);
+    border: 1px solid rgba(41, 39, 36, 0.1);
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.open-archive-banner:hover {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(41, 39, 36, 0.25);
+}
+
+.open-archive-banner span {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: #292724;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+}
+
+.open-archive-banner strong {
+    font-size: 13px;
+    font-weight: 300;
+}
+
+.places-scroll-list {
+    max-height: 48vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
+    box-sizing: border-box;
+}
+
+.place-item-card {
+    padding: 14px 0;
+    border-top: 1px solid rgba(41, 39, 36, 0.08);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.place-item-card:first-child {
+    border-top: none;
+    padding-top: 4px;
+}
+
+.place-item-card:hover {
+    opacity: 0.7;
+}
+
+.place-item-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.place-item-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #292724;
+    letter-spacing: 0.05em;
+}
+
+.place-item-idx {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    opacity: 0.45;
+}
+
+.place-item-meta {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    opacity: 0.52;
+    margin-bottom: 6px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.place-item-category {
+    padding: 1px 6px;
+    background: rgba(41, 39, 36, 0.05);
+    border-radius: 2px;
+    font-size: 9px;
+}
+
+.place-item-photos-preview {
+    display: flex;
+    gap: 6px;
+    margin: 8px 0;
+    overflow-x: auto;
+    padding-bottom: 2px;
+}
+
+.place-item-photo-thumb {
+    width: 52px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 1px;
+    border: 1px solid rgba(41, 39, 36, 0.08);
+    background: #e8e4dc;
+    flex-shrink: 0;
+}
+
+.place-item-snippet {
+    font-size: 11px;
+    line-height: 1.7;
+    letter-spacing: 0.04em;
+    color: rgba(41, 39, 36, 0.72);
+    margin-top: 4px;
+}
+
+.place-item-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+.place-item-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.place-action-link {
+    background: transparent;
+    border: none;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: #292724;
+    opacity: 0.6;
+    cursor: pointer;
+    padding: 0;
+    font-family: "Cormorant Garamond", serif;
+    transition: opacity 0.2s ease;
+}
+
+.place-action-link:hover {
+    opacity: 1;
+}
+
+
+/* =====================================================
+   全屏城市地点 / 活动手记档案页 (#place-archive-page)
+===================================================== */
+
+#place-archive-page {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: #f8f7f2;
+    color: #263026;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+.archive-top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 5vw;
+    background: rgba(248, 247, 242, 0.94);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(41, 39, 36, 0.08);
+}
+
+.archive-back-btn {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    color: #292724;
+    opacity: 0.7;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.archive-back-btn:hover {
+    opacity: 1;
+    transform: translateX(-3px);
+}
+
+.archive-top-location {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    opacity: 0.55;
+}
+
+.archive-top-add-btn {
+    border: 1px solid rgba(41, 39, 36, 0.3);
+    background: transparent;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: #292724;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.archive-top-add-btn:hover {
+    background: rgba(41, 39, 36, 0.05);
+    border-color: rgba(41, 39, 36, 0.6);
+}
+
+.archive-content-container {
+    width: min(840px, 86vw);
+    margin: 0 auto;
+    padding: 60px 0 140px;
+}
+
+.archive-header-block {
+    margin-bottom: 55px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid rgba(41, 39, 36, 0.12);
+}
+
+.archive-subtitle {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    opacity: 0.48;
+    margin-bottom: 14px;
+}
+
+.archive-title {
+    font-size: clamp(32px, 4.5vw, 54px);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+}
+
+.archive-desc {
+    font-size: 14px;
+    line-height: 2;
+    letter-spacing: 0.06em;
+    color: rgba(41, 39, 36, 0.72);
+}
+
+.archive-entry-card {
+    padding: 50px 0;
+    border-bottom: 1px solid rgba(41, 39, 36, 0.1);
+}
+
+.archive-entry-card:last-child {
+    border-bottom: none;
+}
+
+.archive-entry-meta-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.archive-entry-idx {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    opacity: 0.42;
+}
+
+.archive-entry-tags {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    opacity: 0.55;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+}
+
+.archive-entry-title {
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    margin-bottom: 22px;
+}
+
+.archive-photo-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 24px 0 28px;
+}
+
+.archive-photo-item {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #eeeae0;
+    border: 1px solid rgba(41, 39, 36, 0.08);
+    cursor: pointer;
+    position: relative;
+}
+
+.archive-photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+    display: block;
+}
+
+.archive-photo-item:hover img {
+    transform: scale(1.04);
+}
+
+.archive-photo-item-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.archive-photo-item:hover .archive-photo-item-caption {
+    opacity: 1;
+}
+
+.archive-entry-text {
+    font-size: 14.5px;
+    line-height: 2.1;
+    letter-spacing: 0.04em;
+    color: rgba(41, 39, 36, 0.82);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.archive-entry-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+
+/* =====================================================
+   照片放大灯箱 (#photo-lightbox-overlay)
+===================================================== */
+
+#photo-lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 4000;
+    background: rgba(26, 24, 22, 0.88);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    box-sizing: border-box;
+    cursor: zoom-out;
+}
+
+.lightbox-image-wrapper {
+    max-width: 90vw;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: default;
+}
+
+.lightbox-image-wrapper img {
+    max-width: 100%;
+    max-height: 82vh;
+    object-fit: contain;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.35);
+}
+
+.lightbox-close-btn {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 32px;
+    font-weight: 200;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.lightbox-close-btn:hover {
+    opacity: 1;
+}
+
+
+/* =====================================================
+   地点/活动编辑弹窗 (#place-editor-overlay)
+===================================================== */
+
+#place-editor-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: rgba(244, 240, 233, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.place-editor-box {
+    width: min(620px, 92vw);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #fff;
+    padding: 32px;
+    box-sizing: border-box;
+    border: 1px solid rgba(41, 39, 36, 0.12);
+    box-shadow: 0 16px 50px rgba(41, 39, 36, 0.08);
+}
+
+.editor-photos-manager {
+    margin-bottom: 20px;
+}
+
+.editor-photos-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.editor-photos-preview-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.editor-thumb-item {
+    position: relative;
+    width: 72px;
+    height: 56px;
+    border-radius: 2px;
+    overflow: hidden;
+    border: 1px solid rgba(41, 39, 36, 0.12);
+}
+
+.editor-thumb-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.editor-thumb-del {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: none;
+    font-size: 12px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.editor-upload-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.editor-file-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px dashed rgba(41, 39, 36, 0.3);
+    font-size: 11px;
+    cursor: pointer;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    letter-spacing: 0.08em;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.editor-file-label:hover {
+    background: rgba(41, 39, 36, 0.03);
+    border-color: rgba(41, 39, 36, 0.6);
+}
+
+.editor-url-input-group {
+    display: flex;
+    flex: 1;
+    gap: 6px;
+}
+
+.editor-url-input-group input {
+    flex: 1;
+    padding: 6px 10px;
+    font-size: 11px;
+    border: 1px solid rgba(41, 39, 36, 0.15);
+    background: transparent;
+    outline: none;
+}
+
+.editor-url-add-btn {
+    border: 1px solid rgba(41, 39, 36, 0.25);
+    background: transparent;
+    padding: 6px 10px;
+    font-size: 10px;
+    cursor: pointer;
+    font-family: "Cormorant Garamond", serif;
+    letter-spacing: 0.1em;
+}
+
+
+/* =====================================================
+   特别的记忆 / 秘密花园专属样式
+===================================================== */
+
+.editor-secret-garden-section {
+    margin-top: 22px;
+    margin-bottom: 24px;
+    padding: 18px 20px 20px;
+    background: rgba(244, 240, 233, 0.45);
+    border: 1px dashed rgba(41, 39, 36, 0.22);
+    border-radius: 2px;
+}
+
+.editor-secret-garden-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.editor-secret-garden-title {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: #292724;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.editor-secret-garden-badge {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    padding: 2px 6px;
+    background: rgba(41, 39, 36, 0.08);
+    opacity: 0.7;
+    border-radius: 2px;
+}
+
+/* 小狗日记簿画报卡片中的秘密花园专栏 */
+.archive-secret-garden {
+    margin: 26px 0 20px;
+    padding: 22px 24px;
+    background: #faf8f3;
+    border-left: 2px solid rgba(41, 39, 36, 0.35);
+    border-top: 1px solid rgba(41, 39, 36, 0.06);
+    border-right: 1px solid rgba(41, 39, 36, 0.06);
+    border-bottom: 1px solid rgba(41, 39, 36, 0.06);
+    box-shadow: 0 4px 20px rgba(41, 39, 36, 0.02);
+}
+
+.archive-secret-garden-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    gap: 12px;
+}
+
+.archive-secret-garden-label {
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: #292724;
+    opacity: 0.85;
+}
+
+.archive-secret-garden-text {
+    font-size: 13.5px;
+    line-height: 2;
+    letter-spacing: 0.04em;
+    color: rgba(41, 39, 36, 0.88);
+    font-style: italic;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.archive-secret-photos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.archive-secret-photo-item {
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: #f0ece3;
+    border: 1px solid rgba(41, 39, 36, 0.1);
+    cursor: pointer;
+    position: relative;
+}
+
+.archive-secret-photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+    display: block;
+}
+
+.archive-secret-photo-item:hover img {
+    transform: scale(1.05);
+}
+
+/* 侧栏卡片内的秘密花园指示标记 */
+.place-item-secret-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    color: rgba(41, 39, 36, 0.65);
+    background: rgba(41, 39, 36, 0.05);
+    padding: 2px 7px;
+    margin-top: 8px;
+    border-radius: 2px;
+}
+
+
+/* =====================================================
+   滚动条与细微装饰
+===================================================== */
+
+.place-panel::-webkit-scrollbar,
+.memory-scroll-list::-webkit-scrollbar,
+#place-archive-page::-webkit-scrollbar {
+    width: 4px;
+}
+
+.place-panel::-webkit-scrollbar-thumb,
+.memory-scroll-list::-webkit-scrollbar-thumb,
+#place-archive-page::-webkit-scrollbar-thumb {
+    background: rgba(41, 39, 36, 0.18);
+    border-radius: 2px;
+}
+
+.place-panel::-webkit-scrollbar-track,
+.memory-scroll-list::-webkit-scrollbar-track,
+#place-archive-page::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* =====================================================
+   内容排序按钮与外部链接样式
+===================================================== */
+
+.item-order-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.order-btn {
+    border: none;
+    background: transparent;
+    padding: 2px 4px;
+    cursor: pointer;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    color: rgba(41, 39, 36, 0.45);
+    transition: opacity 0.2s ease, color 0.2s ease;
+    user-select: none;
+}
+
+.order-btn:hover {
+    color: #292724;
+    opacity: 0.95;
+}
+
+.place-item-link-btn,
+.memory-mini-link-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 8.5px;
+    letter-spacing: 0.12em;
+    padding: 1px 6px;
+    border: 1px solid rgba(41, 39, 36, 0.22);
+    border-radius: 2px;
+    color: #292724;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+    background: rgba(41, 39, 36, 0.02);
+}
+
+.place-item-link-btn:hover,
+.memory-mini-link-tag:hover {
+    opacity: 1;
+    border-color: rgba(41, 39, 36, 0.55);
+    background: rgba(41, 39, 36, 0.06);
+}
+
+.detail-external-link-wrap,
+.memory-detail-link-section {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px dashed rgba(38, 48, 38, 0.16);
+}
+
+.memory-detail-external-anchor,
+.archive-entry-external-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 18px;
+    background: rgba(41, 39, 36, 0.03);
+    border: 1px solid rgba(41, 39, 36, 0.2);
+    border-radius: 2px;
+    text-decoration: none;
+    color: #292724;
+    transition: all 0.25s ease;
+}
+
+.memory-detail-external-anchor:hover,
+.archive-entry-external-link:hover {
+    background: rgba(41, 39, 36, 0.07);
+    border-color: rgba(41, 39, 36, 0.45);
+}
+
+.archive-entry-link-section {
+    margin-top: 18px;
+}
+
+.archive-entry-external-link .link-prefix {
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    opacity: 0.6;
+    font-family: "Cormorant Garamond", serif;
+}
+
+.archive-entry-external-link .link-target-url {
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    opacity: 0.85;
+    word-break: break-all;
+}
+
+.memory-detail-external-anchor .anchor-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    font-family: "Noto Serif SC", serif;
+}
+
+.memory-detail-external-anchor .anchor-url {
+    font-size: 12px;
+    opacity: 0.65;
+    letter-spacing: 0.04em;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    word-break: break-all;
+}
+
+.memory-list-item[draggable="true"],
+.place-item-card[draggable="true"] {
+    cursor: grab;
+}
+
+.memory-list-item[draggable="true"]:active,
+.place-item-card[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+
+/* =====================================================
+   写在前面 · 导读与卷首语阅读层
+===================================================== */
+
+.intro-reading-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(41, 39, 36, 0.22);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    opacity: 1;
+    visibility: visible;
+}
+
+.intro-reading-overlay.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none !important;
+    display: none !important;
+}
+
+/* =====================================================
+   四页飞行日志导读系统样式
+===================================================== */
+
+.guide-card {
+    background: #f4f0e9;
+    color: #292724;
+    border: 1px solid rgba(41, 39, 36, 0.12);
+    box-shadow: 0 16px 40px rgba(41, 39, 36, 0.08);
+    position: relative;
+    box-sizing: border-box;
+    transition: opacity 0.25s ease;
+}
+
+/* 顶部信息行与关闭按钮 */
+.guide-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.guide-card-meta {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    opacity: 0.48;
+    color: #292724;
+    user-select: none;
+}
+
+.guide-close-btn {
+    border: none;
+    background: transparent;
+    padding: 0 4px;
+    margin: 0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 24px;
+    line-height: 1;
+    color: #292724;
+    opacity: 0.5;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    user-select: none;
+}
+
+.guide-close-btn:hover {
+    opacity: 0.95;
+    transform: scale(1.08);
+}
+
+/* 页面 01：欢迎页面 */
+.guide-page-welcome {
+    width: min(460px, 92vw);
+    min-height: 390px;
+    padding: 32px 36px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.guide-welcome-center {
+    text-align: center;
+    padding: 36px 0 28px;
+}
+
+.guide-welcome-title {
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    font-size: clamp(22px, 3.2vw, 26px);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1.45;
+    color: #292724;
+    margin: 0 0 14px 0;
+}
+
+.guide-welcome-subtitle {
+    font-family: "Noto Serif SC", serif;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    color: #292724;
+    opacity: 0.58;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.guide-welcome-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding-top: 14px;
+}
+
+.guide-welcome-entries {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.guide-entry-btn {
+    border: none;
+    background: transparent;
+    padding: 4px 0;
+    cursor: pointer;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    font-size: 13.5px;
+    letter-spacing: 0.1em;
+    color: #292724;
+    opacity: 0.85;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.guide-entry-btn:hover {
+    opacity: 1;
+    transform: translateX(3px);
+}
+
+.guide-entry-btn strong {
+    font-weight: 700;
+}
+
+.guide-entry-idx {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 11px;
+    opacity: 0.55;
+}
+
+.guide-entry-arrow {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+/* 页面 02 & 03：正文阅读页面 */
+.guide-page-article {
+    width: min(580px, 94vw);
+    max-height: 86vh;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 36px 24px;
+    overflow: hidden;
+}
+
+.guide-article-scroll {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px 8px 12px 0;
+    margin-bottom: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(41, 39, 36, 0.2) transparent;
+}
+
+.guide-article-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.guide-article-scroll::-webkit-scrollbar-thumb {
+    background: rgba(41, 39, 36, 0.2);
+    border-radius: 2px;
+}
+
+.guide-article-header {
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.guide-article-title {
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(28px, 4vw, 36px);
+    letter-spacing: 0.05em;
+    line-height: 1.15;
+    color: #292724;
+    margin: 0 0 10px 0;
+}
+
+.guide-article-title strong {
+    font-weight: 700;
+}
+
+.guide-article-quote {
+    font-family: "Noto Serif SC", serif;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    color: #292724;
+    opacity: 0.72;
+    margin: 0;
+    font-style: normal;
+}
+
+.guide-article-body {
+    font-family: "Noto Serif SC", serif;
+    font-size: 13.5px;
+    line-height: 2.15;
+    letter-spacing: 0.04em;
+    color: #292724;
+    opacity: 0.88;
+    text-align: left;
+}
+
+.guide-para-standalone {
+    margin: 0 0 22px 0;
+}
+
+.guide-para-group {
+    margin: 0 0 20px 0;
+}
+
+.guide-nowrap-line {
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.guide-closing-line {
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    opacity: 0.95;
+    margin-top: 28px !important;
+    margin-bottom: 8px !important;
+}
+
+.guide-article-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 14px;
+    border-top: 1px solid rgba(41, 39, 36, 0.08);
+    flex-shrink: 0;
+}
+
+.guide-next-btn {
+    border: none;
+    background: transparent;
+    padding: 6px 0;
+    cursor: pointer;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    color: #292724;
+    opacity: 0.75;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.guide-next-btn:hover {
+    opacity: 1;
+    transform: translateX(3px);
+}
+
+.guide-next-label {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    opacity: 0.7;
+}
+
+.guide-next-arrow {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+/* 页面 04：八周年祝福页面 */
+.guide-page-anniversary {
+    width: min(460px, 92vw);
+    min-height: 380px;
+    padding: 32px 36px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.guide-anniversary-center {
+    text-align: center;
+    padding: 48px 0 40px;
+}
+
+.guide-anniversary-title {
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    font-size: clamp(24px, 3.5vw, 28px);
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    line-height: 1.4;
+    color: #292724;
+    margin: 0 0 16px 0;
+}
+
+.guide-anniversary-subtitle {
+    font-family: "Noto Serif SC", serif;
+    font-size: clamp(14px, 2.2vw, 16px);
+    letter-spacing: 0.12em;
+    color: #292724;
+    opacity: 0.78;
+    margin: 0;
+}
+
+.guide-anniversary-footer {
+    height: 16px;
+}
+
+@media (max-width: 600px) {
+    .guide-page-welcome,
+    .guide-page-anniversary {
+        padding: 28px 24px 24px;
+        min-height: auto;
+    }
+    .guide-page-article {
+        padding: 24px 22px 18px;
+    }
+    .guide-welcome-center {
+        padding: 28px 0 20px;
+    }
+    .guide-anniversary-center {
+        padding: 36px 0 28px;
+    }
+    .guide-article-scroll {
+        padding: 12px 4px 8px 0;
+    }
+}
+
+/* =====================================================
+   02 秘密花园 与 03 城食记录 样式体系
+===================================================== */
+
+.secret-garden-pane,
+.food-log-pane {
+    padding-top: 14px;
+    animation: fadeInPane 0.25s ease;
+}
+
+@keyframes fadeInPane {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.secret-garden-header,
+.food-log-header {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(41, 39, 36, 0.08);
+}
+
+.secret-garden-title,
+.food-log-tag {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    opacity: 0.5;
+    color: #292724;
+    margin-bottom: 4px;
+}
+
+.secret-garden-subtitle {
+    font-family: "Noto Serif SC", serif;
+    font-size: 12px;
+    opacity: 0.65;
+    color: #292724;
+    letter-spacing: 0.08em;
+}
+
+.food-log-title {
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    font-size: 14px !important;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #292724;
+    margin: 4px 0 6px 0;
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.food-log-subtitle {
+    font-family: "Noto Serif SC", serif;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    color: #292724;
+    opacity: 0.72;
+}
+
+/* 秘密手记与城食手记卡片 */
+.secret-notes-card,
+.food-story-card {
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(41, 39, 36, 0.1);
+    padding: 16px 18px;
+    margin-bottom: 22px;
+    box-sizing: border-box;
+}
+
+.secret-notes-top-row,
+.food-story-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.secret-label,
+.food-story-label {
+    font-size: 11px;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    letter-spacing: 0.12em;
+    color: #292724;
+    opacity: 0.75;
+}
+
+.secret-action-btn,
+.food-action-btn {
+    border: none;
+    background: transparent;
+    padding: 2px 6px;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: inherit;
+    letter-spacing: 0.08em;
+    color: #292724;
+    opacity: 0.6;
+    border-bottom: 1px dashed rgba(41, 39, 36, 0.3);
+    transition: opacity 0.2s;
+}
+
+.secret-action-btn:hover,
+.food-action-btn:hover {
+    opacity: 1;
+}
+
+.secret-notes-body,
+.food-story-body {
+    font-size: 12.5px;
+    line-height: 1.9;
+    letter-spacing: 0.04em;
+    color: #292724;
+    white-space: pre-wrap;
+    opacity: 0.88;
+}
+
+.secret-empty-hint,
+.food-empty-hint {
+    opacity: 0.45;
+    font-style: italic;
+    font-size: 11.5px;
+}
+
+.secret-notes-textarea,
+.food-story-textarea {
+    width: 100%;
+    min-height: 90px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(41, 39, 36, 0.15);
+    padding: 10px 12px;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: #292724;
+    resize: vertical;
+    outline: none;
+    margin-bottom: 10px;
+}
+
+.secret-save-btn,
+.food-save-btn {
+    border: 1px solid #292724;
+    background: #292724;
+    color: #f4f0e9;
+    padding: 5px 14px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s;
+}
+
+.secret-save-btn:hover,
+.food-save-btn:hover {
+    opacity: 0.85;
+}
+
+/* 秘密花园专属相册 */
+.secret-gallery-header,
+.food-dishes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.secret-gallery-title,
+.food-dishes-title {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    opacity: 0.65;
+    color: #292724;
+}
+
+.garden-upload-btn,
+.food-add-dish-btn {
+    border: 1px dashed rgba(41, 39, 36, 0.35);
+    background: transparent;
+    padding: 4px 10px;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    font-family: inherit;
+    color: #292724;
+    opacity: 0.8;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.garden-upload-btn:hover,
+.food-add-dish-btn:hover {
+    opacity: 1;
+    border-color: #292724;
+    background: rgba(41, 39, 36, 0.04);
+}
+
+.secret-photos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 8px;
+}
+
+.secret-photo-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 1px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.04);
+}
+
+.secret-photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+    transition: transform 0.25s ease;
+}
+
+.secret-photo-item:hover img {
+    transform: scale(1.05);
+}
+
+.secret-photo-del-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(41, 39, 36, 0.7);
+    color: #fff;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.secret-photo-item:hover .secret-photo-del-btn {
+    display: flex;
+}
+
+.secret-gallery-empty,
+.food-dishes-empty {
+    font-size: 11.5px;
+    color: #292724;
+    opacity: 0.45;
+    padding: 20px 0;
+    text-align: center;
+    border: 1px dashed rgba(41, 39, 36, 0.15);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* 菜品卡片列表 */
+.food-dishes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.food-dish-card {
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(41, 39, 36, 0.1);
+    padding: 14px 16px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.food-dish-card:hover {
+    border-color: rgba(41, 39, 36, 0.25);
+}
+
+.food-dish-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.food-dish-name {
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: #292724;
+    margin: 0;
+}
+
+.food-dish-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dish-action-link {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: #292724;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.dish-action-link:hover {
+    opacity: 1;
+}
+
+.dish-del-link:hover {
+    color: #a33;
+}
+
+.dish-photos-strip {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+}
+
+.dish-photos-strip img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border-radius: 1px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.dish-photos-strip img:hover {
+    opacity: 0.85;
+}
+
+.dish-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 11px;
+    color: #292724;
+    opacity: 0.72;
+    padding-top: 4px;
+    border-top: 1px dashed rgba(41, 39, 36, 0.08);
+}
+
+.dish-meta-item .meta-label {
+    opacity: 0.55;
+    margin-right: 3px;
+}
+
+/* 多链接条样式 */
+.place-item-links-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+
+/* 多链接管理样式 */
+.editor-links-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.editor-link-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.link-name-input {
+    width: 38% !important;
+    flex-shrink: 0;
+}
+
+.link-url-input {
+    flex: 1;
+}
+
+.editor-link-del-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(41, 39, 36, 0.2);
+    background: transparent;
+    color: #292724;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.editor-link-del-btn:hover {
+    background: rgba(170, 50, 50, 0.1);
+    color: #a33;
+    border-color: #a33;
+}
+
+.editor-add-link-btn {
+    border: 1px dashed rgba(41, 39, 36, 0.35);
+    background: transparent;
+    padding: 6px 12px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    font-family: inherit;
+    color: #292724;
+    transition: all 0.2s;
+}
+
+.editor-add-link-btn:hover {
+    border-color: #292724;
+    background: rgba(41, 39, 36, 0.04);
+}
+
+.editor-links-empty {
+    font-size: 11.5px;
+    color: #292724;
+    opacity: 0.45;
+    padding: 8px 0;
+    font-style: italic;
+}
+
+.archive-links-title {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    opacity: 0.6;
+    margin-bottom: 6px;
+}
+
+.archive-multi-links-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+
+/* 确保城食记录标题在窄屏下折行自然 */
+@media (max-width: 768px) {
+    .food-log-title {
+        font-size: 15px;
+        white-space: normal;
+        word-break: break-word;
+    }
+}
+
+/* 菜品编辑弹窗与多行文字样式 */
+#food-dish-editor-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.food-dish-content-body {
+    font-size: 11.5px;
+    line-height: 1.7;
+    letter-spacing: 0.04em;
+    color: rgba(41, 39, 36, 0.82);
+    margin: 8px 0 10px 0;
+    white-space: pre-line;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 8px 10px;
+    border-radius: 2px;
+}
+
+/* 秘密花园照片工具栏（移动、替换、删除） */
+.secret-photo-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.secret-photo-toolbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(41, 39, 36, 0.78);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 2px;
+    opacity: 0.92;
+    transition: opacity 0.2s ease;
+}
+
+.secret-photo-tool-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #fff;
+    font-size: 10px;
+    line-height: 1;
+    padding: 2px 5px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.secret-photo-tool-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: #fff;
+}
+
+.secret-photo-del-tool:hover {
+    background: rgba(220, 60, 60, 0.8);
+    border-color: #f88;
+}
+
+
+/* 城食记录内联卡片与编辑样式 */
+.food-dish-card-editing {
+    border: 1px solid rgba(41, 39, 36, 0.35) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    padding: 16px 14px !important;
+}
+
+.dish-edit-header-title {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: #292724;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(41, 39, 36, 0.1);
+}
+
+.dish-edit-field {
+    margin-bottom: 12px;
+}
+
+.dish-edit-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: #292724;
+    opacity: 0.75;
+    margin-bottom: 4px;
+    font-family: "Cormorant Garamond", "Noto Serif SC", serif;
+}
+
+.dish-edit-input,
+.dish-edit-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 7px 10px;
+    border: 1px solid rgba(41, 39, 36, 0.25);
+    background: #fff;
+    font-family: "Noto Serif SC", serif;
+    font-size: 11px;
+    color: #292724;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.dish-edit-input:focus,
+.dish-edit-textarea:focus {
+    border-color: #292724;
+}
+
+.dish-edit-textarea {
+    resize: vertical;
+    min-height: 60px;
+    line-height: 1.6;
+}
+
+.dish-upload-btn {
+    border: 1px dashed rgba(41, 39, 36, 0.35);
+    background: transparent;
+    padding: 5px 12px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    font-family: inherit;
+    color: #292724;
+    transition: all 0.2s;
+}
+
+.dish-upload-btn:hover {
+    background: rgba(41, 39, 36, 0.05);
+    border-color: #292724;
+}
+
+.dish-edit-thumbs-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.dish-edit-thumb-item {
+    position: relative;
+    width: 58px;
+    height: 44px;
+    border: 1px solid rgba(41, 39, 36, 0.15);
+    border-radius: 2px;
+    overflow: hidden;
+    background: #e8e4dc;
+}
+
+.dish-edit-thumb-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+}
+
+.dish-thumb-del-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    border: none;
+    font-size: 11px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.dish-no-photo-hint {
+    font-size: 11px;
+    color: #292724;
+    opacity: 0.45;
+    font-style: italic;
+    padding: 4px 0;
+}
+
+.dish-edit-buttons-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(41, 39, 36, 0.15);
+}
+
+.dish-save-btn {
+    border: 1px solid #292724;
+    background: #292724;
+    color: #f4f0e9;
+    padding: 6px 14px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s;
+}
+
+.dish-save-btn:hover {
+    opacity: 0.85;
+}
+
+.dish-cancel-btn {
+    border: none;
+    background: transparent;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    color: #292724;
+    opacity: 0.6;
+    padding: 6px 8px;
+}
+
+.dish-cancel-btn:hover {
+    opacity: 1;
+}
+
+.dish-delete-card-btn {
+    margin-left: auto;
+    border: none;
+    background: transparent;
+    color: #a33;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.dish-delete-card-btn:hover {
+    opacity: 1;
+}

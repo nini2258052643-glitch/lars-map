@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>LARS / IN TRANSIT</title>
+    <meta name="description" content="Lars的城市日记与中国旅行地图">
+    <meta property="og:title" content="LARS / IN TRANSIT">
+    <meta property="og:description" content="Lars的城市日记与中国旅行地图">
+
+    <!-- 字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Serif+SC:wght@400;500;600&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- D3 -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+
+    <!-- CSS -->
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
+
+
+<body>
+
+<main id="app">
+
+    <!-- =========================
+         PAGE 1
+         首页
+    ========================== -->
+
+    <section
+        id="home-page"
+        class="page active"
+    >
+
+        <div class="project-name">
+            LARS / IN TRANSIT
+        </div>
+
+        <div class="project-time">
+            2026 — PRESENT
+        </div>
+
+
+        <div class="home-content">
+
+            <h1>
+                Lars的城市日记
+            </h1>
+
+
+            <div class="intro-text">
+
+                <p>
+                    飞行意味着自由与可能性
+                </p>
+
+                <p>
+                    停留、离开，<br>
+                    尾翼在不同城市留下痕迹
+                </p>
+
+                <p>
+                    继而振翅到达向往的「远方」
+                </p>
+
+            </div>
+
+
+            <button
+                id="enter-map"
+                class="enter-button"
+            >
+
+                <span>
+                    ENTER MAP
+                </span>
+
+                <strong>
+                    →
+                </strong>
+
+            </button>
+
+        </div>
+
+
+        <div class="page-number">
+            01 / 02
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         PAGE 2
+         中国地图
+    ========================== -->
+
+    <section
+        id="map-page"
+        class="page"
+    >
+
+        <header class="map-header">
+
+            <div class="project-name">
+                LARS / IN TRANSIT
+            </div>
+
+            <button
+                id="back-home"
+                class="back-button"
+            >
+                ← BACK
+            </button>
+
+        </header>
+
+        <!-- 布局容器：左侧独立地图区域 + 右侧固定城市档案面板 -->
+        <div class="map-layout-container">
+
+            <div
+                id="map-frame"
+                class="map-frame"
+            >
+
+                <div
+                    id="map-viewport"
+                    class="map-viewport"
+                >
+
+                    <svg
+                        id="china-map"
+                    ></svg>
+
+                </div>
+
+                <!-- 操作提示 -->
+                <div class="map-hint">
+                    SCROLL TO ZOOM
+                    <span>·</span>
+                    DRAG TO MOVE
+                </div>
+
+                <!-- 页码 -->
+                <div class="map-page-number">
+                    02 / 02
+                </div>
+
+            </div>
+
+            <!-- =========================
+                 城市旅行档案（固定侧栏）
+            ========================== -->
+
+            <aside
+                id="place-panel"
+                class="place-panel"
+            >
+
+                <div class="panel-header-bar">
+                    <div class="place-label">
+                        CITY ARCHIVE
+                    </div>
+
+                    <button
+                        id="close-place"
+                        class="close-place"
+                        type="button"
+                        data-action="close-city-panel"
+                        aria-label="关闭城市面板"
+                    >
+                        ×
+                    </button>
+                </div>
+
+
+                <h2 id="place-title">
+                    杭州
+                </h2>
+
+
+                <div
+                    id="place-location"
+                    class="place-location"
+                >
+                    ZHEJIANG / CHINA
+                </div>
+
+
+                <div class="place-line"></div>
+
+
+                <div
+                    id="place-description"
+                    class="place-description"
+                >
+                    Lars关于杭州的记忆
+                </div>
+
+                <!-- 三个独立板块导航：01 飞行日志 / 02 秘密花园 / 03 城食记录 -->
+                <nav class="city-sections-nav">
+                    <button
+                        type="button"
+                        class="section-tab active"
+                        data-tab="places"
+                        data-action="switch-city-tab"
+                    >
+                        <span class="tab-index">01</span>
+                        <span class="tab-name">飞行日志</span>
+                        <span id="tab-count-places" class="tab-count-badge"></span>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="section-tab"
+                        data-tab="secret-garden"
+                        data-action="switch-city-tab"
+                    >
+                        <span class="tab-index">02</span>
+                        <span class="tab-name">秘密花园</span>
+                        <span id="tab-count-secret" class="tab-count-badge"></span>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="section-tab"
+                        data-tab="food-log"
+                        data-action="switch-city-tab"
+                    >
+                        <span class="tab-index">03</span>
+                        <span class="tab-name">城食记录</span>
+                        <span id="tab-count-food" class="tab-count-badge"></span>
+                    </button>
+                </nav>
+
+                <!-- 板块内容容器 -->
+                <div class="city-sections-content">
+                    <!-- 板块 01: 飞行日志（统一整合原城市记忆与所有记录） -->
+                    <div id="section-pane-places" class="section-pane active"></div>
+
+                    <!-- 板块 02: 秘密花园（支持图文展示与本地照片上传管理） -->
+                    <div id="section-pane-secret-garden" class="section-pane"></div>
+
+                    <!-- 板块 03: 城食记录（城市饮食手记与菜品自由增删排序） -->
+                    <div id="section-pane-food-log" class="section-pane"></div>
+                </div>
+
+            </aside>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================
+     写在前面 · 导读与卷首语阅读层
+========================== -->
+<div id="intro-reading-overlay" class="intro-reading-overlay" role="dialog" aria-modal="true" aria-label="小狗飞行日志导读系统">
+
+    <!-- PAGE 01 — 写在前面: 导读首页 -->
+    <div id="guide-page-1" class="guide-card guide-page-welcome" style="display: flex;">
+        <div class="guide-card-header">
+            <span class="guide-card-meta">PROLOGUE</span>
+            <button type="button" class="guide-close-btn" data-guide-action="close" aria-label="关闭导读">×</button>
+        </div>
+
+        <div class="guide-welcome-center">
+            <h1 class="guide-welcome-title">写在前面</h1>
+        </div>
+
+        <div class="guide-welcome-footer">
+            <button type="button" class="guide-next-btn" data-guide-goto="2" aria-label="进入下一篇">
+                <span class="guide-next-label">NEXT</span>
+                <span class="guide-next-arrow">→</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- PAGE 02 — BEYOND THE CLOUDS: 第一篇独立正文页面 -->
+    <div id="guide-page-2" class="guide-card guide-page-article" style="display: none;">
+        <div class="guide-card-header">
+            <span class="guide-card-meta">01 / BEYOND THE CLOUDS</span>
+            <button type="button" class="guide-close-btn" data-guide-action="close" aria-label="关闭导读">×</button>
+        </div>
+
+        <div class="guide-article-scroll">
+            <header class="guide-article-header">
+                <h1 class="guide-article-title"><strong>Beyond the Clouds</strong></h1>
+                <p class="guide-article-quote">“我正在成为谁”</p>
+            </header>
+
+            <div class="guide-article-body">
+                <p class="guide-para-standalone">飞行意味着无限自由与可能性</p>
+
+                <p class="guide-para-group">
+                    从一座城市奔赴另一座城市<br>
+                    从一个人生阶段走向下一个人生阶段<br>
+                    从最初的起点 到更远的航线
+                </p>
+
+                <p class="guide-para-group">
+                    无数次起飞，穿越云层，降落<br>
+                    在不断变化的坐标里寻找新的方向<br>
+                    我们带着未知出发<br>
+                    在一次次尝试与挑战中拓宽自己的边界
+                </p>
+
+                <p class="guide-para-group">
+                    每一次飞行都是人生坐标的一次更新<br>
+                    尾翼掠过天空 留下的是一路走来的证明
+                </p>
+
+                <p class="guide-para-group">
+                    愿你始终保持飞行的勇气<br>
+                    <span class="guide-nowrap-line">也祝你行至平流层永远都是晴天</span>
+                </p>
+
+                <p class="guide-closing-line">向上 向远方</p>
+            </div>
+        </div>
+
+        <div class="guide-article-footer">
+            <button type="button" class="guide-next-btn" data-guide-goto="3" aria-label="进入下一篇">
+                <span class="guide-next-label">NEXT</span>
+                <span class="guide-next-arrow">→</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- PAGE 03 — STAY & FEEL: 第二篇独立正文页面 -->
+    <div id="guide-page-3" class="guide-card guide-page-article" style="display: none;">
+        <div class="guide-card-header">
+            <span class="guide-card-meta">02 / STAY & FEEL</span>
+            <button type="button" class="guide-close-btn" data-guide-action="close" aria-label="关闭导读">×</button>
+        </div>
+
+        <div class="guide-article-scroll">
+            <header class="guide-article-header">
+                <h1 class="guide-article-title"><strong>Stay & Feel</strong></h1>
+                <p class="guide-article-quote">“我曾如何感受世界”</p>
+            </header>
+
+            <div class="guide-article-body">
+                <p class="guide-para-group">
+                    地图与四季都遍布你行走的痕迹<br>
+                    在不同城市短暂停留<br>
+                    感受一座城独有的呼吸
+                </p>
+
+                <p class="guide-para-group">
+                    云南闷热<br>
+                    偶尔会下一场突如其来的雨<br>
+                    北方冬日清晨<br>
+                    刺骨的寒风冻得脸有点疼<br>
+                    烟雨江南<br>
+                    街道会泛起朦胧水汽<br>
+                    不同的气候、语言、饮食与生活方式
+                </p>
+
+                <p class="guide-para-group">
+                    <span class="guide-nowrap-line">春夏秋冬 深夜凌晨</span><br>
+                    你听见城市的声音<br>
+                    <span class="guide-nowrap-line">也在这些片刻里慢慢理解世界认识自己</span>
+                </p>
+
+                <p class="guide-closing-line">爱遍布世界的每个角落</p>
+            </div>
+        </div>
+
+        <div class="guide-article-footer">
+            <button type="button" class="guide-next-btn" data-guide-goto="4" aria-label="进入下一页">
+                <span class="guide-next-label">NEXT</span>
+                <span class="guide-next-arrow">→</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- PAGE 04 — ANNIVERSARY: 八周年祝福页面 -->
+    <div id="guide-page-4" class="guide-card guide-page-anniversary" style="display: none;">
+        <div class="guide-card-header">
+            <span class="guide-card-meta">A NEW JOURNEY BEGINS</span>
+            <button type="button" class="guide-close-btn" data-guide-action="close" aria-label="关闭导读并进入主页">×</button>
+        </div>
+
+        <div class="guide-anniversary-center">
+            <h1 class="guide-anniversary-title">出道八周年快乐</h1>
+            <p class="guide-anniversary-subtitle">新的一年继续出发^^</p>
+        </div>
+
+        <div class="guide-anniversary-footer"></div>
+    </div>
+
+</div>
+
+
+<!-- =========================
+     小鸟光标系统（带微弱飞行残影）
+========================== -->
+
+<div class="bird-cursor-trail trail-2" aria-hidden="true"></div>
+<div class="bird-cursor-trail trail-1" aria-hidden="true"></div>
+
+<div class="bird-cursor" aria-hidden="true">
+
+    <svg
+        class="bird-svg"
+        width="44"
+        height="32"
+        viewBox="0 0 44 32"
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <!-- 远侧微羽 -->
+        <path
+            class="bird-back-wing"
+            d="M 17 12 C 22 5, 29 3, 34 5 C 29 8, 25 12, 23 15 Z"
+            fill="rgba(41, 39, 36, 0.15)"
+            stroke="currentColor"
+            stroke-width="0.9"
+            stroke-linejoin="round"
+        />
+
+        <!-- 主躯干与尾羽 -->
+        <path
+            class="bird-body"
+            d="
+                M 2 16
+                C 7 15, 12 17, 18 17
+                C 24 17, 30 15, 36 11
+                C 38 10, 42 11, 41 12
+                C 38 14, 34 18, 30 20
+                C 24 23, 16 23, 9 20
+                C 6 20, 3 19, 2 16 Z
+            "
+            fill="rgba(244, 240, 233, 0.65)"
+            stroke="currentColor"
+            stroke-width="1.2"
+            stroke-linejoin="round"
+        />
+
+        <!-- 近侧主翅膀（带扇动微动） -->
+        <path
+            class="bird-main-wing"
+            d="
+                M 15 17
+                C 14 9, 18 4, 25 2
+                C 28 1, 32 3, 31 5
+                C 28 8, 24 13, 23 18
+                C 20 18, 17 18, 15 17 Z
+            "
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        />
+
+        <!-- 眼神与喙部点缀 -->
+        <circle
+            cx="38"
+            cy="11.5"
+            r="0.9"
+            fill="currentColor"
+        />
+    </svg>
+
+</div>
+
+
+
+<!-- JS -->
+
+<script src="map-data.js"></script>
+<script src="script.js"></script>
+
+</body>
+
+</html>

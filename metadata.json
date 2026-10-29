@@ -1,0 +1,8 @@
+{
+  "name": "LARS / IN TRANSIT",
+  "description": "Lars的城市日记与中国旅行地图",
+  "prompt": "LARS / IN TRANSIT - 城市日记与旅行地图",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
